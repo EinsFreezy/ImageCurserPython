@@ -9,6 +9,7 @@ import time
 
 def delFolder(path):
     folder_path = path
+
     for file_name in os.listdir(folder_path):
         file_path = os.path.join(folder_path, file_name)
         if os.path.isfile(file_path):
@@ -32,26 +33,29 @@ def tile(filename, dir_in, dir_out, d):
         img.crop(box).save(out)
 
     # Get a list of all PNG files in the folder
-    png_files = glob.glob(dir_out + '/*.'+filetyp)
+    png_files = glob.glob(dir_out + '/*.png')
 
     # Calculate the number of columns and rows based on the file names
     column_nums = set()
     row_nums = set()
     for file in png_files:
         # Extract the column and row numbers from the file name
-        filename = file.split('\\')[-1]
+        filename = file.split('/')[-1]
+        print(filename)
         name, column_num, row_num = filename.split('_')[:3]
         column_nums.add(int(str(column_num)))
         row_nums.add(int(str(row_num).replace("." + filetyp, "")))
 
     print(column_nums)
     print(row_nums)
+
     num_cols = max(column_nums) // d + 1
     num_rows = max(row_nums) // d + 1
 
     # Calculate the dimensions of the final image
     image_width = num_cols * d
     image_height = num_rows * d
+
     print(f'Number of columns: {num_cols}')
     print(f'Number of rows: {num_rows}')
     print(f'Image width: {image_width}')
@@ -80,11 +84,12 @@ def tile(filename, dir_in, dir_out, d):
 
     # Create a new blank image for the final collage
     num_images = len(random_files)
-    collage_width = d * num_cols
-    collage_height = d * num_rows
+    collage_width = 64 * num_cols
+    collage_height = 64 * num_rows
+
     image_width = int(collage_width / num_cols)
     image_height = int(collage_height / num_rows)
-    collage_image = Image.new('RGB', (collage_width, collage_height), (255, 255, 255, 255))
+    collage_image = Image.new('RGBA', (collage_width, collage_height), (255, 255, 255, 255))
 
     # Loop through the random files and paste them onto the collage image
     for i, png_file in enumerate(random_files):
@@ -95,10 +100,11 @@ def tile(filename, dir_in, dir_out, d):
         collage_image.paste(image, (x_pos, y_pos))
 
     # Save the final collage image
-    collage_image.save(dir_out + '/collage.'+filetyp)
+    collage_image.save(dir_out + '/collage.png')
+
     end = time.time() - start
     print(end)
 
 
-delFolder('YOUR PATH')
-tile('YOUR FILE NAME', 'IMAGE PATH', 'IMAGE OUT', 100)
+delFolder('./img_out')
+tile('olafscholz01.jpg', './img', './img_out', 1)
